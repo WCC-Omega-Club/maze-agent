@@ -6,8 +6,15 @@
 #include <fstream>
 #include <algorithm>
 #include "Matrix.hpp"
+#include "astar.hpp"
+#include "generators.hpp"
+#include "MTRandom.hpp"
 using namespace std;
-
+void display_edges(vector< pair<int, int> > edges) {
+	for (int i = 0; i < (int)edges.size(); i++) {
+		cout << "(" << edges[i].first << "," << edges[i].second << ") ";
+	}
+}
  
 
 
@@ -170,6 +177,7 @@ public:
 class Agent
 {
 private:	
+	
 /// <summary>
 /// Two dimensional matrix for mapping the original maze
 /// </summary>
@@ -218,6 +226,7 @@ private:
 	deque<Coord *> closedDeque;
 
 public:	
+	
 /// <summary>
 /// Initializes a new instance of the <see cref="Agent"/> class.
 /// </summary>
@@ -269,7 +278,7 @@ public:
 
 Agent::Agent() :cost(0), maxOpenQSize(0) {
 	ifstream mapFile;
-	mapFile.open("map.txt", ios::in);
+	mapFile.open("map.txtt", ios::in);
 	if (mapFile.is_open())
 	{
 		string line;
@@ -277,6 +286,9 @@ Agent::Agent() :cost(0), maxOpenQSize(0) {
 		std::string::iterator end_pos = std::remove(line.begin(), line.end(), ' ');
 		line.erase(end_pos, line.end());
 		mapFile.seekg(0, ios::beg);
+
+		
+
 																// Initialize both maps
 		int size = line.size();
 		Maze = new numeric_lib::matrix<int>(size, size);
@@ -285,6 +297,7 @@ Agent::Agent() :cost(0), maxOpenQSize(0) {
 			for (auto j = 0; j <size; ++j) {
 				mapFile >> (*Maze)(i,j);
 				(*Route)(i,j) =(*Maze)(i,j);
+				
 
 																// Mark the beginning and exit coordinates
 				if ((*Maze)(i,j) == (int)tileType::START) {
@@ -301,10 +314,55 @@ Agent::Agent() :cost(0), maxOpenQSize(0) {
 				}
 			}
 		}
+		
+		
 		mapFile.close();
 	}
 	else {
-		cout << "Unable to open file";
+		Random mtrand;
+		int max = mtrand.integer();
+		int first_perm = rand_int(100, max);
+		int first_perm_sqr = pow(first_perm, 2);
+		std::vector <std::pair<int, int>> edge_list = rand_tree(first_perm_sqr);
+		
+		
+
+		Maze = new numeric_lib::matrix<int>(first_perm, first_perm);
+		Route = new numeric_lib::matrix<int>(first_perm, first_perm);
+		int row, column;
+		int start = rand_int(1, mtrand.integer());
+		edge_list = rand_kruskal_tree(first_perm_sqr, edge_list);
+		int end = rand_int(1, first_perm_sqr);
+		while (end == start)
+			end = rand_int(1, first_perm_sqr);
+		int end1 = rand_int(1, first_perm_sqr);
+		while (end ==end1 || start == end1)
+			end1 = rand_int(1, first_perm_sqr);
+		int corner = rand_int(1, first_perm_sqr);
+		if(corner == start || corner == end || corner == end1)
+			corner = rand_int(1, first_perm_sqr);
+		for (int i = 0; i < (int)edge_list.size(); i++) {
+			row = (int)(i / first_perm);
+			column = i % first_perm;
+			if (edge_list[i].first % (int)tileType::BLOCK == 0 && i != start && i != end && i != end1 && i != corner)
+				(*Maze)(row, column) =  (int)tileType::BLOCK;
+			else if (i == start) {
+				(*Maze)(row, column) = (int)tileType::START;
+			}
+			else if (i == end) {
+				(*Maze)(row, column) = (int)tileType::E1;
+			}
+			else if (i == end1) {
+				(*Maze)(row, column) = (int)tileType::E2;
+			}
+			else if(i == corner)
+				(*Maze)(row, column) = (int)tileType::CORNER;
+			else
+				(*Maze)(row, column) = (int)tileType::FREE;
+			(*Route)(row, column) = (*Maze)(row, column);
+		}
+		
+		std::cout << "Unable to open file\n Generating Maze of size: " + first_perm_sqr << " using prim's algorithm.";
 	}
 }
 

@@ -19,8 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="astar.hpp" />
+    <ClInclude Include="fsa.hpp" />
+    <ClInclude Include="generators.hpp" />
     <ClInclude Include="Matrix.hpp" />
     <ClInclude Include="MazeAgent.hpp" />
+    <ClInclude Include="MTRandom.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

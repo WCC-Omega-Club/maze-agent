@@ -1,6 +1,8 @@
 #include "MazeAgent.hpp"
 #include <chrono>
 #include <iostream>
+#include <iterator>
+
 
 void PrintAnalytics(std::chrono::time_point<std::chrono::steady_clock> t1, std::chrono::time_point<std::chrono::steady_clock> t2);
 typedef std::chrono::high_resolution_clock Clock;
@@ -85,12 +87,12 @@ int main() {
 	PrintAnalytics(sa3, ea3);
 	agent->CleanUp();
 
-	cout << "\n\n Challenge: Write a faster search than the current A* search implementation for a 25 x 25 maze" << endl;
+	cout << "\n\n Challenge: Write a faster search than the current A* search implementation for a 1000x1000 maze" << endl;
 
 	
 	delete agent;
 
-	return 0;
+	return 3;
 }
 
 void PrintAnalytics(std::chrono::time_point<std::chrono::steady_clock> t1, std::chrono::time_point<std::chrono::steady_clock> t2) {
